@@ -9,10 +9,10 @@
 :root{--paper:#eee3d3;--ink:#191815;--pink:#ed7b82;--red:#b94c50}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:"Trebuchet MS",ui-rounded,system-ui,sans-serif;color:var(--ink)}
-body{background:#111;display:grid;place-items:center;padding:8px}
-.phone{width:min(100%,430px);height:min(900px,97dvh);min-height:590px;background:var(--paper);border:7px solid #080808;border-radius:40px;overflow:hidden;position:relative;box-shadow:0 18px 55px #0008}
+body{background:var(--paper);display:block;padding:0;min-height:100dvh;overflow:hidden}
+.phone{width:100%;height:100dvh;min-height:100svh;background:var(--paper);border:0;border-radius:0;overflow:hidden;position:relative;box-shadow:none}
 .phone:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.4;background:radial-gradient(ellipse at 12% 8%,#fff 0,transparent 38%),radial-gradient(ellipse at 95% 90%,#c8b7a0 0,transparent 42%);z-index:1}
-.notch{position:absolute;z-index:10;top:0;left:50%;transform:translateX(-50%);width:42%;height:34px;background:#050505;border-radius:0 0 22px 22px}
+.notch{display:none}
 .stage{height:100%;width:100%;display:none;position:relative;overflow:hidden;align-items:center;justify-content:center;flex-direction:column;padding:22px}
 .stage.active{display:flex;animation:fade .3s ease}
 @keyframes fade{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
@@ -57,7 +57,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 </head>
 <body>
 <main class="phone" aria-label="A tiny mystery birthday website">
-<div class="notch" aria-hidden="true"></div>
+
 <section class="stage active" id="intro">
 <div class="leaf-shadow"></div><div class="doodles"><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <button class="big-click" id="start">Click<br>Me...</button><div class="heart">♡</div>
