@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e9dfcf">
+<title>A Tiny Mystery</title>
+<style>
+:root{--paper:#eee5d7;--ink:#24221f;--red:#b85d4e;--blue:#4d7194;--shadow:rgba(43,34,25,.12)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;color:var(--ink)}
+body{background:#171717;display:grid;place-items:center;padding:14px}
+.phone{width:min(100%,420px);min-height:min(850px,94dvh);background:var(--paper);border:8px solid #101010;border-radius:38px;overflow:hidden;position:relative;box-shadow:0 20px 60px #0008}
+.status{height:34px;padding:10px 20px 0;font-size:12px;display:flex;justify-content:space-between;letter-spacing:.3px}
+.stage{min-height:calc(min(850px,94dvh) - 50px);padding:26px 22px 30px;display:none;position:relative;overflow:hidden}
+.stage.active{display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.paper-texture{position:absolute;inset:0;pointer-events:none;opacity:.22;background:radial-gradient(ellipse at 20% 15%,#fff 0,transparent 36%),radial-gradient(ellipse at 90% 80%,#c8b9a6 0,transparent 40%)}
+.kicker{font-size:11px;text-transform:uppercase;letter-spacing:2px;opacity:.62;margin-bottom:18px}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+.big-click{background:transparent;font-size:clamp(42px,12vw,58px);line-height:1.08;letter-spacing:-2px;padding:20px 12px;position:relative;z-index:1;transform:rotate(-3deg)}
+.big-click:after{content:"";position:absolute;inset:8px -2px;border:2px solid var(--red);border-radius:50%;transform:rotate(5deg);pointer-events:none}
+.heart{font-size:25px;color:var(--red);margin-top:12px}
+.hint{font-size:13px;opacity:.58;margin-top:30px}
+.instruction{font-size:clamp(28px,7vw,37px);line-height:1.15;text-align:center;max-width:300px;transform:rotate(-2deg);margin:12px 0 16px}
+.underline{height:5px;width:80%;background:#d58c7b;opacity:.8;border-radius:50%;transform:rotate(-3deg);margin:-8px 0 24px}
+.then{font-size:17px;margin-bottom:12px}
+.corner{position:absolute;background:transparent;font-size:15px;line-height:1.2;max-width:116px;padding:10px;color:var(--ink);text-align:center;z-index:2}
+.corner:before{content:"↙";display:block;font-size:27px;line-height:1}
+.tl{top:54px;left:8px;transform:rotate(-8deg)}.tr{top:54px;right:8px;transform:rotate(8deg)}.bl{bottom:45px;left:8px;transform:rotate(7deg)}.br{bottom:45px;right:8px;transform:rotate(-7deg)}
+.tr:before,.br:before{content:"↙"}.tl:before,.bl:before{content:"↘"}
+.corner.done{color:var(--red);opacity:.45;text-decoration:line-through}
+.corner.next{background:rgba(184,93,78,.12);border:2px dashed var(--red);border-radius:14px;animation:flash .75s ease-in-out infinite;opacity:1}
+@keyframes flash{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.15);transform:scale(1.07)}}
+.instruction.flash{animation:instructionFlash .55s ease-in-out 2}
+@keyframes instructionFlash{0%,100%{opacity:1}50%{opacity:.2}}
+.center-tap.next{background:rgba(184,93,78,.13);border:2px dashed var(--red);border-radius:14px;animation:flash .75s ease-in-out infinite}
+.center-tap{background:transparent;padding:15px 18px;font-size:18px;z-index:1}
+.smiley{font-size:27px;margin-top:12px}
+.note{font-size:12px;opacity:.55;text-align:center;margin-top:12px}
+.gift-wrap{display:flex;align-items:center;justify-content:center;flex:1;width:100%;min-height:260px}
+.gift-button{background:transparent;position:relative;padding:10px;animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-9px) rotate(1deg)}}
+.gift{width:174px;height:137px;position:relative;background:#d9c4a7;border:3px solid #332c25;border-radius:5px;box-shadow:8px 10px 0 #c2ac90}
+.gift:before{content:"";position:absolute;left:65px;top:0;width:29px;height:100%;background:var(--red);border-left:2px solid #332c25;border-right:2px solid #332c25}
+.gift:after{content:"";position:absolute;left:-8px;top:-20px;width:184px;height:34px;background:#ead9c0;border:3px solid #332c25;border-radius:5px;box-shadow:0 4px 0 #c2ac90}
+.ribbon{position:absolute;z-index:2;top:-49px;left:54px;width:55px;height:42px;border:6px solid var(--red);border-radius:50% 50% 8% 50%;transform:rotate(20deg)}
+.ribbon:after{content:"";position:absolute;left:24px;top:-3px;width:55px;height:42px;border:6px solid var(--red);border-radius:50% 50% 50% 8%;transform:rotate(-45deg)}
+.present-label{margin-top:30px;font-size:18px}
+.reveal{display:none;text-align:center;position:relative;z-index:2;width:100%;animation:pop .65s cubic-bezier(.2,1.5,.5,1)}
+.reveal.show{display:block}
+@keyframes pop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+.birthday{font-size:clamp(34px,9vw,48px);line-height:1.03;letter-spacing:-1.5px;margin:12px 0;color:#24221f;transform:rotate(-2deg)}
+.birthday span{color:var(--red)}
+.subtitle{font-size:17px;line-height:1.45;margin:20px auto 0;max-width:285px}
+.cartoon{width:180px;height:210px;margin:12px auto 0;position:relative}
+.hair{position:absolute;left:25px;top:5px;width:130px;height:150px;background:#3b2922;border-radius:48% 48% 42% 42%;box-shadow:-13px 25px 0 -2px #3b2922,13px 25px 0 -2px #3b2922}
+.face{position:absolute;left:42px;top:22px;width:96px;height:112px;background:#dca17e;border:2px solid #332c25;border-radius:45% 45% 48% 48%;z-index:1}
+.fringe{position:absolute;left:41px;top:18px;width:100px;height:42px;background:#3b2922;border-radius:60% 55% 30% 20%;z-index:2;transform:rotate(-5deg)}
+.eye{position:absolute;top:58px;width:8px;height:11px;background:#292321;border-radius:50%;z-index:3}.eye.one{left:63px}.eye.two{left:105px}
+.blush{position:absolute;top:78px;width:16px;height:8px;background:#c86f69;border-radius:50%;opacity:.6;z-index:3}.blush.one{left:49px}.blush.two{left:115px}
+.smile{position:absolute;left:78px;top:82px;width:25px;height:13px;border-bottom:3px solid #592d2b;border-radius:0 0 50% 50%;z-index:3}
+.bodygirl{position:absolute;left:29px;top:126px;width:122px;height:78px;background:#f5f2e9;border:2px solid #332c25;border-radius:25px 25px 9px 9px;z-index:2}
+.overall{position:absolute;left:51px;top:128px;width:80px;height:76px;background:var(--blue);border:2px solid #332c25;border-radius:8px 8px 5px 5px;z-index:3}
+.overall:before,.overall:after{content:"";position:absolute;top:-15px;width:17px;height:25px;background:var(--blue);border:2px solid #332c25;border-bottom:0;border-radius:5px 5px 0 0}.overall:before{left:8px;transform:rotate(-8deg)}.overall:after{right:8px;transform:rotate(8deg)}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;width:8px;height:14px;background:var(--red);border-radius:2px;animation:fall 2.6s linear infinite;top:-20px}
+.confetti i:nth-child(3n){background:var(--blue)}.confetti i:nth-child(3n + 1){background:#c5a66f}
+@keyframes fall{to{transform:translateY(850px) rotate(650deg);opacity:.1}}
+.smallprint{font-size:11px;opacity:.45;margin-top:24px}
+@media(max-height:700px){.stage{padding-top:14px;padding-bottom:14px}.cartoon{transform:scale(.82);margin:-4px auto}.gift{transform:scale(.85)}.corner{font-size:13px}.tl,.tr{top:40px}.bl,.br{bottom:25px}}
+</style>
+</head>
+<body>
+<main class="phone" aria-label="A tiny mystery">
+  <div class="status"><span>9:41</span><span>● ● ▰</span></div>
+  <section class="stage active" id="intro">
+    <div class="paper-texture"></div>
+    <div class="kicker">a tiny mystery</div>
+    <button class="big-click" id="start">Click<br>Me...</button>
+    <div class="heart">♡</div>
+    <div class="hint">go on, tap it</div>
+  </section>
+
+  <section class="stage" id="game">
+    <div class="paper-texture"></div>
+    <button class="corner tl" data-corner="0">No click here...</button>
+    <button class="corner tr" data-corner="1">Corner no click here...</button>
+    <button class="corner bl" data-corner="2">No No click here...</button>
+    <button class="corner br" data-corner="3">No no no click here...</button>
+    <div class="kicker">important instructions</div>
+    <div class="instruction">Click here<br>in every corner!</div>
+    <div class="underline"></div>
+    <div class="then" id="thenText">Then 3 times...</div>
+    <button class="center-tap" id="centerTap">no click here...</button>
+    <div class="smiley">☻</div>
+    <div class="note" id="gameNote">Psst... follow the instructions. Definitely.</div>
+  </section>
+
+  <section class="stage" id="presentStage">
+    <div class="paper-texture"></div>
+    <div class="kicker">you did it</div>
+    <div class="gift-wrap" id="giftWrap">
+      <button class="gift-button" id="openGift" aria-label="Open the present">
+        <span class="ribbon"></span><span class="gift"></span>
+      </button>
+    </div>
+    <div class="present-label" id="presentLabel">Click the present 🎁</div>
+    <div class="reveal" id="reveal">
+      <div class="confetti" id="confetti"></div>
+      <div class="cartoon" aria-label="Cartoon girl with white top and blue overalls">
+        <div class="hair"></div><div class="face"></div><div class="fringe"></div>
+        <div class="eye one"></div><div class="eye two"></div><div class="blush one"></div><div class="blush two"></div><div class="smile"></div>
+        <div class="bodygirl"></div><div class="overall"></div>
+      </div>
+      <div class="birthday">HAPPY<br>BIRTHDAY<br><span>BLAAAADDD!</span></div>
+      <div class="subtitle">🥳 Hope you have the best day!<br>Consider this your official excuse to be extra today.</div>
+      <div class="smallprint">mission complete · smile achieved ♡</div>
+    </div>
+  </section>
+</main>
+<script>
+const stages = [...document.querySelectorAll('.stage')];
+function show(id){ stages.forEach(s=>s.classList.toggle('active',s.id===id)); }
+document.getElementById('start').addEventListener('click',()=>show('game'));
+
+let cornerCount=0, centerCount=0;
+const cornerButtons=[...document.querySelectorAll('[data-corner]')];
+const instruction=document.querySelector('.instruction');
+const thenText=document.getElementById('thenText');
+const centerTap=document.getElementById('centerTap');
+const gameNote=document.getElementById('gameNote');
+const cornerLabels=[
+  'No click here...',
+  'Corner no click here...',
+  'No No click here...',
+  'No no no click here...'
+];
+function flashInstruction(message){
+  instruction.innerHTML=message;
+  instruction.classList.remove('flash');
+  void instruction.offsetWidth;
+  instruction.classList.add('flash');
+}
+function guideNext(){
+  cornerButtons.forEach((b,i)=>b.classList.toggle('next',i===cornerCount));
+  if(cornerCount<4){
+    flashInstruction('Click here<br>in every corner!');
+    gameNote.textContent='Step '+(cornerCount+1)+': '+cornerLabels[cornerCount];
+  } else {
+    cornerButtons.forEach(b=>b.classList.remove('next'));
+    thenText.textContent='Now tap the middle 3 times...';
+    centerTap.classList.add('next');
+    centerTap.textContent='No click here...';
+    gameNote.textContent='Nearly there. The middle is definitely not clickable.';
+  }
+}
+cornerButtons.forEach((btn,i)=>btn.addEventListener('click',()=>{
+  if(i!==cornerCount){
+    gameNote.textContent='Not that one 😏 Follow the flashing instruction.';
+    btn.animate([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:220});
+    return;
+  }
+  btn.classList.remove('next');
+  btn.classList.add('done');
+  cornerCount++;
+  if(cornerCount<4){
+    flashInstruction(cornerLabels[cornerCount]);
+    guideNext();
+  } else {
+    flashInstruction('Okay, now click<br>the middle 3 times!');
+    guideNext();
+  }
+}));
+centerTap.addEventListener('click',()=>{
+  if(cornerCount<4){
+    gameNote.textContent='Corners first! Follow the flashing words.';
+    centerTap.animate([{transform:'scale(1)'},{transform:'scale(.95)'},{transform:'scale(1)'}],{duration:220});
+    return;
+  }
+  centerCount++;
+  const messages=['No no click here...','No no no click here...','Okay, okay. You win!'];
+  centerTap.textContent=messages[Math.min(centerCount-1,2)];
+  flashInstruction(centerCount<3?'Then click the middle<br>one more time...':'Mission complete!');
+  gameNote.textContent=`Middle taps: ${centerCount}/3`;
+  if(centerCount>=3){
+    centerTap.classList.remove('next');
+    setTimeout(()=>show('presentStage'),650);
+  }
+});
+guideNext();
+document.getElementById('openGift').addEventListener('click',()=>{
+  document.getElementById('giftWrap').style.display='none';
+  document.getElementById('presentLabel').style.display='none';
+  document.getElementById('reveal').classList.add('show');
+  const confetti=document.getElementById('confetti');
+  for(let i=0;i<34;i++){const bit=document.createElement('i');bit.style.left=Math.random()*100+'%';bit.style.animationDelay=(Math.random()*1.8)+'s';bit.style.animationDuration=(1.8+Math.random()*1.8)+'s';confetti.appendChild(bit);}
+});
+</script>
+</body>
+</html>
